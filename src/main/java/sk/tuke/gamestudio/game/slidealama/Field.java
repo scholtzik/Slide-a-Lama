@@ -2,13 +2,18 @@ package sk.tuke.gamestudio.game.slidealama;
 import java.util.Random;
 public class Field {
     private final Tile[][] tiles;
+    private final Tile[] nextTiles;
     private int rowCount;
     private int colCount;
     private int score;
+    private GameState state;
     public Field(int rowCount,int colCount){
         this.rowCount = rowCount;
         this.colCount = colCount;
         this.tiles = new Tile[rowCount][colCount];
+        this.nextTiles = new Tile[3];
+        this.state= GameState.PLAYING;
+        initialize();
     }
     public void initialize(){
         Random random = new Random();
@@ -17,6 +22,17 @@ public class Field {
                 this.tiles[row][col]= new Tile(random.nextInt(5));
             }
         }
+        for(int i=0; i<3; i++){
+            nextTiles[i] = new Tile(random.nextInt(5));
+        }
+    }
+    public Tile getNextTile(){
+        Random random = new Random();
+        var tile=this.nextTiles[0];
+        nextTiles[0]=nextTiles[1];
+        nextTiles[1]=nextTiles[2];
+        nextTiles[2] = new Tile(random.nextInt(5));
+        return tile;
     }
     public void insertLeft(int row,Tile tile){
         for(int col = colCount-1; col>0;col--){
@@ -26,7 +42,7 @@ public class Field {
     }
 
     public void insertRight(int row, Tile tile){
-        for(int col = 0; col<colCount-2;col++){
+        for(int col = 0; col<colCount-1;col++){
             tiles[row][col] = tiles[row][col+1];
         }
         tiles[row][colCount-1] = tile;
@@ -85,5 +101,13 @@ public class Field {
 
     public void setColCount(int colCount) {
         this.colCount = colCount;
+    }
+
+    public GameState getState() {
+        return state;
+    }
+
+    public void setState(GameState state) {
+        this.state = state;
     }
 }
